@@ -1,0 +1,105 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../providers/theme_provider.dart';
+import '../../services/auth_service.dart';
+import '../auth/login_screen.dart';
+
+class AdminDashboard extends StatelessWidget {
+  const AdminDashboard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Provider.of<ThemeProvider>(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Dashboard Admin"),
+        actions: [
+          IconButton(
+            icon: Icon(theme.isDarkMode ? Icons.light_mode : Icons.dark_mode),
+            onPressed: theme.toggleTheme,
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await AuthService().logout();
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+                (route) => false,
+              );
+            },
+          ),
+        ],
+      ),
+      body: GridView.count(
+        padding: const EdgeInsets.all(20),
+        crossAxisCount: 2,
+        childAspectRatio: 1.1,
+        mainAxisSpacing: 16,
+        crossAxisSpacing: 16,
+        children: const [
+          _DashboardCard(
+              icon: Icons.people,
+              label: 'Kelola Data Siswa',
+              color: Colors.blueAccent),
+          _DashboardCard(
+              icon: Icons.school,
+              label: 'Kelola Data Guru',
+              color: Colors.orangeAccent),
+          _DashboardCard(
+              icon: Icons.schedule,
+              label: 'Kelola Jadwal',
+              color: Colors.green),
+          _DashboardCard(
+              icon: Icons.campaign,
+              label: 'Kelola Pengumuman',
+              color: Colors.purple),
+        ],
+      ),
+    );
+  }
+}
+
+class _DashboardCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  const _DashboardCard({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 4,
+      color: color.withOpacity(0.2),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Navigasi ke $label')),
+          );
+        },
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 48, color: color),
+              const SizedBox(height: 10),
+              Text(label,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                      fontSize: 16)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

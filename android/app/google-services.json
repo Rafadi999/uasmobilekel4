@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "303383910806",
+    "project_id": "uasmobile-kelompok4-d7559",
+    "storage_bucket": "uasmobile-kelompok4-d7559.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:303383910806:android:6e90881da93c1f18abe5b7",
+        "android_client_info": {
+          "package_name": "com.example.uasmobile_kelompok4"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmy147chJWjm23bC2Zej1DazZ22iJKgmQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
