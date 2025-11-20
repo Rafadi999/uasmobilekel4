@@ -18,6 +18,42 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passC = TextEditingController();
   bool loading = false;
 
+  void showErrorPopup() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.redAccent.shade200,
+        title: Row(
+          children: const [
+            Icon(Icons.error_outline, color: Colors.white),
+            SizedBox(width: 8),
+            Text(
+              "Login Gagal",
+              style: TextStyle(color: Colors.white),
+            ),
+          ],
+        ),
+        content: const Text(
+          "Email atau password salah!",
+          style: TextStyle(color: Colors.white),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              "OK",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void login() async {
     setState(() => loading = true);
     final result = await AuthService().loginUser(
@@ -27,9 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => loading = false);
 
     if (result == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Email atau password salah')),
-      );
+      showErrorPopup();
       return;
     }
 
@@ -63,10 +97,14 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.school, size: 80, color: isDark ? Colors.white : Colors.blue),
+                Icon(Icons.school,
+                    size: 80, color: isDark ? Colors.white : Colors.blue),
                 const SizedBox(height: 20),
-                Text("SISTEM AKADEMIK SEKOLAH",
-                    style: Theme.of(context).textTheme.headlineSmall),
+                Text(
+                  "SISTEM AKADEMIK SEKOLAH",
+                  style: Theme.of(context).textTheme.headlineSmall,
+                  textAlign: TextAlign.center,
+                ),
                 const SizedBox(height: 30),
                 TextField(
                   controller: emailC,
@@ -92,7 +130,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         icon: const Icon(Icons.login),
                         label: const Text("Login"),
                         style: ElevatedButton.styleFrom(
-                            minimumSize: const Size.fromHeight(48)),
+                          minimumSize: const Size.fromHeight(48),
+                        ),
                       ),
                 const SizedBox(height: 16),
                 Row(
@@ -104,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         isDark ? Icons.light_mode : Icons.dark_mode,
                       ),
                     ),
-                    Text(isDark ? "Light Mode" : "Dark Mode")
+                    Text(isDark ? "Light Mode" : "Dark Mode"),
                   ],
                 )
               ],
