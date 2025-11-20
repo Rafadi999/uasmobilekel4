@@ -1,15 +1,26 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import '../models/student.dart';
-import '../services/firestore_service.dart';
 
 class StudentProvider extends ChangeNotifier {
-  final FirestoreService _svc = FirestoreService();
-  final List<Student> items = [];
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  Stream<QuerySnapshot> streamAll() => FirebaseFirestore.instance.collection('students').snapshots();
+  Stream<List<Student>> getStudents() {
+    return _db.collection('users').where('role', isEqualTo: 'siswa').snapshots()
+      .map((snapshot) => snapshot.docs
+      .map((doc) => Student.fromMap(doc.id, doc.data()))
+      .toList());
+  }
 
-  Future<void> add(Student s) => _svc.addData('students', s.toMap());
-  Future<void> update(Student s) => _svc.updateData('students', s.id, s.toMap());
-  Future<void> delete(String id) => _svc.deleteData('students', id);
+  Future<void> addStudent(Student student) async {
+    await _db.collection('users').add(student.toMap());
+  }
+
+  Future<void> updateStudent(Student student) async {
+    await _db.collection('users').doc(student.id).update(student.toMap());
+  }
+
+  Future<void> deleteStudent(String id) async {
+    await _db.collection('users').doc(id).delete();
+  }
 }

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../services/auth_service.dart';
 import '../auth/login_screen.dart';
+import 'manage_students.dart'; // <-- WAJIB DITAMBAHKAN
 
 class AdminDashboard extends StatelessWidget {
   const AdminDashboard({super.key});
@@ -38,23 +39,48 @@ class AdminDashboard extends StatelessWidget {
         childAspectRatio: 1.1,
         mainAxisSpacing: 16,
         crossAxisSpacing: 16,
-        children: const [
+        children: [
           _DashboardCard(
-              icon: Icons.people,
-              label: 'Kelola Data Siswa',
-              color: Colors.blueAccent),
+            icon: Icons.people,
+            label: 'Kelola Data Siswa',
+            color: Colors.blueAccent,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => ManageStudentsScreen()),
+              );
+            },
+          ),
           _DashboardCard(
-              icon: Icons.school,
-              label: 'Kelola Data Guru',
-              color: Colors.orangeAccent),
+            icon: Icons.school,
+            label: 'Kelola Data Guru',
+            color: Colors.orangeAccent,
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Menu Guru belum tersedia')),
+              );
+            },
+          ),
           _DashboardCard(
-              icon: Icons.schedule,
-              label: 'Kelola Jadwal',
-              color: Colors.green),
+            icon: Icons.schedule,
+            label: 'Kelola Jadwal',
+            color: Colors.green,
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Menu Jadwal belum tersedia')),
+              );
+            },
+          ),
           _DashboardCard(
-              icon: Icons.campaign,
-              label: 'Kelola Pengumuman',
-              color: Colors.purple),
+            icon: Icons.campaign,
+            label: 'Kelola Pengumuman',
+            color: Colors.purple,
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Menu Pengumuman belum tersedia')),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -65,11 +91,13 @@ class _DashboardCard extends StatelessWidget {
   final IconData icon;
   final String label;
   final Color color;
+  final VoidCallback onTap;
 
   const _DashboardCard({
     required this.icon,
     required this.label,
     required this.color,
+    required this.onTap,
   });
 
   @override
@@ -80,11 +108,7 @@ class _DashboardCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Navigasi ke $label')),
-          );
-        },
+        onTap: onTap,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

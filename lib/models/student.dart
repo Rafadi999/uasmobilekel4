@@ -1,17 +1,44 @@
 class Student {
   final String id;
-  final String nis;
   final String name;
+  final String email;
+  final String nis;
   final String kelas;
   final String jurusan;
+  final String role;
 
-  Student({required this.id, required this.nis, required this.name, required this.kelas, required this.jurusan});
+  Student({
+    required this.id,
+    required this.name,
+    required this.email,
+    required this.nis,
+    required this.kelas,
+    required this.jurusan,
+    this.role = "siswa",
+  });
 
-  Map<String, dynamic> toMap() => {
-    'nis': nis, 'name': name, 'kelas': kelas, 'jurusan': jurusan
-  };
+  // Convert ke Map untuk simpan ke Firestore
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'email': email,
+      'nis': nis,
+      'kelas': kelas,
+      'jurusan': jurusan,
+      'role': role,
+    };
+  }
 
-  factory Student.fromMap(String id, Map<String, dynamic> m) => Student(
-    id: id, nis: m['nis'] ?? '', name: m['name'] ?? '', kelas: m['kelas'] ?? '', jurusan: m['jurusan'] ?? ''
-  );
+  // Buat dari Firestore Map (hindari null error)
+  factory Student.fromMap(String id, Map<String, dynamic> map) {
+    return Student(
+      id: id,
+      name: (map['name'] ?? '').toString(),
+      email: (map['email'] ?? '').toString(),
+      nis: (map['nis'] ?? '').toString(),
+      kelas: (map['kelas'] ?? '').toString(),
+      jurusan: (map['jurusan'] ?? '').toString(),
+      role: (map['role'] ?? 'siswa').toString(),
+    );
+  }
 }
