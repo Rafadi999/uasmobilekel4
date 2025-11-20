@@ -1,6 +1,6 @@
 class Student {
   final String id;
-  final String name;
+  final String nama;
   final String email;
   final String nis;
   final String kelas;
@@ -9,7 +9,7 @@ class Student {
 
   Student({
     required this.id,
-    required this.name,
+    required this.nama,
     required this.email,
     required this.nis,
     required this.kelas,
@@ -20,7 +20,7 @@ class Student {
   // Convert ke Map untuk simpan ke Firestore
   Map<String, dynamic> toMap() {
     return {
-      'name': name,
+      'nama': nama,
       'email': email,
       'nis': nis,
       'kelas': kelas,
@@ -33,7 +33,7 @@ class Student {
   factory Student.fromMap(String id, Map<String, dynamic> map) {
     return Student(
       id: id,
-      name: (map['name'] ?? '').toString(),
+      nama: (map['nama'] ?? '').toString(),
       email: (map['email'] ?? '').toString(),
       nis: (map['nis'] ?? '').toString(),
       kelas: (map['kelas'] ?? '').toString(),

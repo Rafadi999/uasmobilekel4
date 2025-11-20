@@ -16,7 +16,7 @@ class ManageStudentsScreen extends StatelessWidget {
   void _showForm(BuildContext ctx, {Student? edit}) {
     if (edit != null) {
       _email.text = edit.email;
-      _name.text = edit.name;
+      _name.text = edit.nama;
       _nis.text = edit.nis;
       _kelas.text = edit.kelas;
       _jurusan.text = edit.jurusan;
@@ -94,7 +94,7 @@ class ManageStudentsScreen extends StatelessWidget {
               final d = docs[i];
               final s = Student.fromMap(d.id, d.data() as Map<String, dynamic>);
               return ListTile(
-                title: Text(s.name),
+                title: Text(s.nama),
                 subtitle: Text("NIS: ${s.nis} | ${s.kelas}-${s.jurusan}"),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,

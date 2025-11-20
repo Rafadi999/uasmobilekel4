@@ -22,7 +22,7 @@ class _StudentFormState extends State<StudentForm> {
   @override
   void initState() {
     super.initState();
-    nameC = TextEditingController(text: widget.student?.name);
+    nameC = TextEditingController(text: widget.student?.nama);
     emailC = TextEditingController(text: widget.student?.email);
     nisC = TextEditingController(text: widget.student?.nis);
     kelasC = TextEditingController(text: widget.student?.kelas);
@@ -53,7 +53,7 @@ class _StudentFormState extends State<StudentForm> {
 
                 final student = Student(
                   id: widget.student?.id ?? '',
-                  name: nameC.text,
+                  nama: nameC.text,
                   email: emailC.text,
                   nis: nisC.text,
                   kelas: kelasC.text,
