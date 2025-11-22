@@ -5,6 +5,7 @@ import '../../services/auth_service.dart';
 import '../auth/login_screen.dart';
 import 'manage_students.dart';
 import 'manage_teachers.dart';
+import 'manage_schedule.dart'; // Import layar jadwal
 
 class AdminDashboard extends StatelessWidget {
   const AdminDashboard({super.key});
@@ -68,8 +69,9 @@ class AdminDashboard extends StatelessWidget {
             label: 'Kelola Jadwal',
             color: Colors.green,
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Menu Jadwal belum tersedia')),
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => ManageScheduleScreen()),
               );
             },
           ),
@@ -117,11 +119,15 @@ class _DashboardCard extends StatelessWidget {
             children: [
               Icon(icon, size: 48, color: color),
               const SizedBox(height: 10),
-              Text(label,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: color,
-                      fontSize: 16)),
+              Text(
+                label,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                  fontSize: 16,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),

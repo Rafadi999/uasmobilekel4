@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+
 import 'providers/theme_provider.dart';
 import 'providers/student_provider.dart';
 import 'providers/teacher_provider.dart';
+import 'providers/announcement_provider.dart';
+import 'providers/schedule_provider.dart';
+
 import 'screens/auth/login_screen.dart';
-import 'firebase_options.dart'; // hasil dari flutterfire configure
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 🔹 Inisialisasi Firebase
+  // Inisialisasi Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -19,8 +23,10 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => StudentProvider()), // ⬅ Tambah disini
-        ChangeNotifierProvider(create: (_) => TeacherProvider()), // ⬅ Tambah disini
+        ChangeNotifierProvider(create: (_) => StudentProvider()),
+        ChangeNotifierProvider(create: (_) => TeacherProvider()),
+        ChangeNotifierProvider(create: (_) => AnnouncementProvider()), // ⬅ baru ditambahkan
+        ChangeNotifierProvider(create: (_) => ScheduleProvider()), // ⬅ baru ditambahkan
       ],
       child: const MyApp(),
     ),
@@ -39,7 +45,6 @@ class MyApp extends StatelessWidget {
       title: 'SISTEM AKADEMIK SEKOLAH',
       themeMode: themeProvider.currentTheme,
 
-      // 🌞 Tema terang
       theme: ThemeData(
         brightness: Brightness.light,
         colorSchemeSeed: Colors.blueAccent,
@@ -50,7 +55,6 @@ class MyApp extends StatelessWidget {
         ),
       ),
 
-      // 🌙 Tema gelap
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         colorSchemeSeed: Colors.tealAccent,

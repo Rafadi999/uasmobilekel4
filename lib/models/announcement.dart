@@ -1,17 +1,30 @@
 class Announcement {
-  final String id;
+  final String? id;
   final String title;
-  final String body;
-  final DateTime createdAt;
+  final String message;
+  final DateTime date;
 
-  Announcement({required this.id, required this.title, required this.body, required this.createdAt});
+  Announcement({
+    this.id,
+    required this.title,
+    required this.message,
+    required this.date,
+  });
 
-  Map<String,dynamic> toMap() => {'title': title,'body': body,'createdAt': createdAt.toIso8601String()};
+  Map<String, dynamic> toMap() {
+    return {
+      'title': title,
+      'message': message,
+      'date': date.toIso8601String(),
+    };
+  }
 
-  factory Announcement.fromMap(String id, Map<String,dynamic> m) => Announcement(
-    id: id,
-    title: m['title'] ?? '',
-    body: m['body'] ?? '',
-    createdAt: DateTime.parse(m['createdAt'] ?? DateTime.now().toIso8601String()),
-  );
+  factory Announcement.fromMap(String id, Map<String, dynamic> map) {
+    return Announcement(
+      id: id,
+      title: map['title'] ?? '',
+      message: map['message'] ?? '',
+      date: DateTime.parse(map['date']),
+    );
+  }
 }

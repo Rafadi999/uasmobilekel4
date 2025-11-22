@@ -3,9 +3,10 @@ import 'package:provider/provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../services/auth_service.dart';
 import '../auth/login_screen.dart';
+import '../teacher/announcement_screen.dart'; // 🟢 Import benar
 
-class StudentDashboard extends StatelessWidget {
-  const StudentDashboard({super.key});
+class TeacherDashboard extends StatelessWidget {
+  const TeacherDashboard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,12 +14,12 @@ class StudentDashboard extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Dashboard Siswa"),
+        title: const Text("Dashboard Guru"),
         actions: [
           IconButton(
-            icon: Icon(theme.isDarkMode ? Icons.light_mode : Icons.dark_mode),
-            onPressed: theme.toggleTheme,
-          ),
+              icon:
+                  Icon(theme.isDarkMode ? Icons.light_mode : Icons.dark_mode),
+              onPressed: theme.toggleTheme),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
@@ -35,26 +36,34 @@ class StudentDashboard extends StatelessWidget {
       body: GridView.count(
         padding: const EdgeInsets.all(20),
         crossAxisCount: 2,
-        childAspectRatio: 1.1,
         mainAxisSpacing: 16,
         crossAxisSpacing: 16,
-        children: const [
+        children: [
           _DashboardCard(
-              icon: Icons.schedule,
-              label: 'Lihat Jadwal Pelajaran',
-              color: Colors.teal),
+            icon: Icons.assignment,
+            label: 'Input Nilai',
+            color: Colors.orange,
+            onTap: () {},
+          ),
           _DashboardCard(
-              icon: Icons.grade,
-              label: 'Lihat Nilai',
-              color: Colors.amber),
+            icon: Icons.schedule,
+            label: 'Jadwal Mengajar',
+            color: Colors.green,
+            onTap: () {},
+          ),
           _DashboardCard(
-              icon: Icons.picture_as_pdf,
-              label: 'Lihat / Ekspor Rapor',
-              color: Colors.redAccent),
-          _DashboardCard(
-              icon: Icons.campaign,
-              label: 'Pengumuman',
-              color: Colors.indigo),
+            icon: Icons.campaign,
+            label: 'Pengumuman',
+            color: Colors.blue,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AnnouncementScreen(isTeacher: true),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -65,40 +74,35 @@ class _DashboardCard extends StatelessWidget {
   final IconData icon;
   final String label;
   final Color color;
+  final VoidCallback onTap;
 
   const _DashboardCard({
     required this.icon,
     required this.label,
     required this.color,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4,
       color: color.withOpacity(0.2),
+      elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Navigasi ke $label')),
-          );
-        },
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 48, color: color),
-              const SizedBox(height: 10),
-              Text(label,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: color,
-                      fontSize: 16)),
-            ],
-          ),
+        onTap: onTap,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 40, color: color),
+            const SizedBox(height: 10),
+            Text(label,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                    fontSize: 16)),
+          ],
         ),
       ),
     );
