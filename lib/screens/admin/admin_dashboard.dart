@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../services/auth_service.dart';
 import '../auth/login_screen.dart';
-import 'manage_students.dart'; // <-- WAJIB DITAMBAHKAN
+import 'manage_students.dart';
+import 'manage_teachers.dart';
 
 class AdminDashboard extends StatelessWidget {
   const AdminDashboard({super.key});
@@ -56,8 +57,9 @@ class AdminDashboard extends StatelessWidget {
             label: 'Kelola Data Guru',
             color: Colors.orangeAccent,
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Menu Guru belum tersedia')),
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => ManageTeachersScreen()),
               );
             },
           ),

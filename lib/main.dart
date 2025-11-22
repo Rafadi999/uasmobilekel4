@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'providers/theme_provider.dart';
+import 'providers/student_provider.dart';
+import 'providers/teacher_provider.dart';
 import 'screens/auth/login_screen.dart';
 import 'firebase_options.dart'; // hasil dari flutterfire configure
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 🔹 Inisialisasi Firebase sebelum aplikasi dijalankan
+  // 🔹 Inisialisasi Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -17,6 +19,8 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => StudentProvider()), // ⬅ Tambah disini
+        ChangeNotifierProvider(create: (_) => TeacherProvider()), // ⬅ Tambah disini
       ],
       child: const MyApp(),
     ),
