@@ -4,7 +4,8 @@ import '../../providers/schedule_provider.dart';
 import '../../models/schedule.dart';
 
 class StudentScheduleScreen extends StatelessWidget {
-  final String className; // diisi otomatis dari data siswa login
+  final String className; // dari login siswa
+
   const StudentScheduleScreen({super.key, required this.className});
 
   @override
@@ -15,19 +16,27 @@ class StudentScheduleScreen extends StatelessWidget {
       appBar: AppBar(title: Text("Jadwal Kelas $className")),
       body: StreamBuilder<List<Schedule>>(
         stream: provider.getSchedulesByClass(className),
-        builder: (context, snap) {
-          if (!snap.hasData) return const Center(child: CircularProgressIndicator());
-          final data = snap.data!;
-          if (data.isEmpty) return const Center(child: Text("Tidak ada jadwal"));
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final schedules = snapshot.data!;
+
+          if (schedules.isEmpty) {
+            return const Center(child: Text("Belum ada jadwal."));
+          }
 
           return ListView.builder(
-            itemCount: data.length,
-            itemBuilder: (ctx, i) {
-              final s = data[i];
+            itemCount: schedules.length,
+            itemBuilder: (context, i) {
+              final s = schedules[i];
               return Card(
+                margin: const EdgeInsets.all(10),
                 child: ListTile(
                   title: Text("${s.pelajaran} — ${s.guru}"),
-                  subtitle: Text("${s.hari}, ${s.waktumulai} - ${s.waktuselesai}"),
+                  subtitle:
+                      Text("${s.hari} • ${s.waktumulai} - ${s.waktuselesai}"),
                 ),
               );
             },

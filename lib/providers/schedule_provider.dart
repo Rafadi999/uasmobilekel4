@@ -1,47 +1,51 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../models/schedule.dart';
+import '../services/firestore_service.dart';
 
-class ScheduleProvider extends ChangeNotifier {
-  final _col = FirebaseFirestore.instance.collection('jadwal');
+class ScheduleProvider with ChangeNotifier {
+  final FirestoreService _service = FirestoreService();
+  List<Schedule> schedules = [];
 
-  // Admin: semua jadwal
-  Stream<List<Schedule>> getSchedules() {
-    return _col.snapshots().map(
-      (snap) => snap.docs.map((doc) => Schedule.fromFirestore(doc)).toList()
-    );
+  ScheduleProvider() {
+    _listenToSchedules();
   }
 
-  // Guru: filter nama guru
-  Stream<List<Schedule>> getSchedulesByTeacher(String teacherName) {
-    return _col
-        .where('guru', isEqualTo: teacherName)
-        .snapshots()
-        .map((snap) => snap.docs.map((doc) => Schedule.fromFirestore(doc)).toList());
+  /// ============================
+  /// LISTEN SEMUA JADWAL (ADMIN)
+  /// ============================
+  void _listenToSchedules() {
+    _service.getJadwalStream().listen((data) {
+      schedules = data;
+      notifyListeners();
+    });
   }
 
-  // Siswa: filter kelas
+  /// =======================================
+  /// STREAM UNTUK SISWA: Berdasarkan Kelas
+  /// =======================================
   Stream<List<Schedule>> getSchedulesByClass(String className) {
-    return _col
-        .where('namakelas', isEqualTo: className)
-        .snapshots()
-        .map((snap) => snap.docs.map((doc) => Schedule.fromFirestore(doc)).toList());
+    return _service.getJadwalByClass(className);
   }
 
+  /// =======================================
+  /// STREAM UNTUK GURU: Berdasarkan ID Guru
+  /// =======================================
+  Stream<List<Schedule>> getSchedulesByTeacher(String teacherId) {
+    return _service.getJadwalByTeacher(teacherId);
+  }
+
+  /// ============================
+  /// CRUD JADWAL
+  /// ============================
   Future<void> addSchedule(Schedule schedule) async {
-    final docRef = _col.doc();
-    final newSchedule = schedule.copyWith(id: docRef.id);
-    await docRef.set(newSchedule.toMap());
-    notifyListeners();
+    await _service.addJadwal(schedule);
   }
 
   Future<void> updateSchedule(Schedule schedule) async {
-    await _col.doc(schedule.id).update(schedule.toMap());
-    notifyListeners();
+    await _service.updateJadwal(schedule);
   }
 
   Future<void> deleteSchedule(String id) async {
-    await _col.doc(id).delete();
-    notifyListeners();
+    await _service.deleteJadwal(id);
   }
 }

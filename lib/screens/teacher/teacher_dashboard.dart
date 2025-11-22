@@ -57,7 +57,7 @@ class TeacherDashboard extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => TeacherScheduleScreen(teacherName: teacherName),
+                  builder: (_) => TeacherScheduleScreen(teacherId: currentUser?.uid ?? "", teacherName: teacherName,),
                 ),
               );
             },
