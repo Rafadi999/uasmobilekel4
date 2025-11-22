@@ -1,38 +1,47 @@
-// lib/providers/schedule_provider.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../models/schedule.dart';
 
 class ScheduleProvider extends ChangeNotifier {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final String collectionName = 'jadwal';
+  final _col = FirebaseFirestore.instance.collection('jadwal');
 
-  // Stream realtime, newest first (by createdAt)
+  // Admin: semua jadwal
   Stream<List<Schedule>> getSchedules() {
-    return _db
-        .collection(collectionName)
-        .orderBy('createdAt', descending: true)
+    return _col.snapshots().map(
+      (snap) => snap.docs.map((doc) => Schedule.fromFirestore(doc)).toList()
+    );
+  }
+
+  // Guru: filter nama guru
+  Stream<List<Schedule>> getSchedulesByTeacher(String teacherName) {
+    return _col
+        .where('guru', isEqualTo: teacherName)
         .snapshots()
-        .map((snap) => snap.docs
-            .map((d) => Schedule.fromMap(d.id, d.data() as Map<String, dynamic>))
-            .toList());
+        .map((snap) => snap.docs.map((doc) => Schedule.fromFirestore(doc)).toList());
+  }
+
+  // Siswa: filter kelas
+  Stream<List<Schedule>> getSchedulesByClass(String className) {
+    return _col
+        .where('namakelas', isEqualTo: className)
+        .snapshots()
+        .map((snap) => snap.docs.map((doc) => Schedule.fromFirestore(doc)).toList());
   }
 
   Future<void> addSchedule(Schedule schedule) async {
-    await _db.collection(collectionName).add({
-      ...schedule.toMap(),
-      'createdAt': FieldValue.serverTimestamp(),
-    });
+    final docRef = _col.doc();
+    final newSchedule = schedule.copyWith(id: docRef.id);
+    await docRef.set(newSchedule.toMap());
+    notifyListeners();
   }
 
   Future<void> updateSchedule(Schedule schedule) async {
-    await _db.collection(collectionName).doc(schedule.id).update({
-      ...schedule.toMap(),
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
+    await _col.doc(schedule.id).update(schedule.toMap());
+    notifyListeners();
   }
 
   Future<void> deleteSchedule(String id) async {
-    await _db.collection(collectionName).doc(id).delete();
+    await _col.doc(id).delete();
+    notifyListeners();
   }
 }

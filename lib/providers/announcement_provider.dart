@@ -1,33 +1,29 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../models/announcement.dart';
+import '../services/firestore_service.dart';
 
-class AnnouncementProvider extends ChangeNotifier {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+class AnnouncementProvider with ChangeNotifier {
+  final FirestoreService _firestoreService = FirestoreService();
+  List<Announcement> _announcements = [];
 
-  Stream<List<Announcement>> getAnnouncements() {
-    return _db
-        .collection('announcements')
-        .orderBy('date', descending: true)
-        .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) =>
-                Announcement.fromMap(doc.id, doc.data()))
-            .toList()
-        );
+  List<Announcement> get announcements => _announcements;
+
+  AnnouncementProvider() {
+    _firestoreService.getAnnouncements().listen((data) {
+      _announcements = data;
+      notifyListeners();
+    });
   }
 
-  Future<void> addAnnouncement(Announcement announcement) async {
-    await _db.collection('announcements').add(announcement.toMap());
+  Future<void> add(Announcement announcement) async {
+    await _firestoreService.addAnnouncement(announcement);
   }
 
-  Future<void> updateAnnouncement(Announcement announcement) async {
-    await _db.collection('announcements')
-        .doc(announcement.id)
-        .update(announcement.toMap());
+  Future<void> update(Announcement announcement) async {
+    await _firestoreService.updateAnnouncement(announcement);
   }
 
-  Future<void> deleteAnnouncement(String id) async {
-    await _db.collection('announcements').doc(id).delete();
+  Future<void> delete(String id) async {
+    await _firestoreService.deleteAnnouncement(id);
   }
 }

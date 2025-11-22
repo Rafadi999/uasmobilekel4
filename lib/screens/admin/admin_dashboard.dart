@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:uasmobile_kelompok4/screens/admin/manage_announcements.dart';
 import '../../providers/theme_provider.dart';
 import '../../services/auth_service.dart';
 import '../auth/login_screen.dart';
@@ -80,8 +81,9 @@ class AdminDashboard extends StatelessWidget {
             label: 'Kelola Pengumuman',
             color: Colors.purple,
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Menu Pengumuman belum tersedia')),
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ManageAnnouncementsScreen())
               );
             },
           ),

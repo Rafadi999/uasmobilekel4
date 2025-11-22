@@ -3,18 +3,22 @@ import 'package:provider/provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../services/auth_service.dart';
 import '../auth/login_screen.dart';
-import '../teacher/announcement_screen.dart'; // 🟢 Import benar
+import '../teacher/announcement_screen.dart';
+import '../teacher/teacher_schedule.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class StudentDashboard extends StatelessWidget {
-  const StudentDashboard({super.key});
+class TeacherDashboard extends StatelessWidget {
+  const TeacherDashboard({super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
+    final currentUser = FirebaseAuth.instance.currentUser; // Ambil user yang login
+    final teacherName = currentUser?.displayName ?? "Guru"; // fallback jika null
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Dashboard Siswa"),
+        title: const Text("Dashboard Guru"),
         actions: [
           IconButton(
             icon: Icon(theme.isDarkMode ? Icons.light_mode : Icons.dark_mode),
@@ -36,43 +40,37 @@ class StudentDashboard extends StatelessWidget {
       body: GridView.count(
         padding: const EdgeInsets.all(20),
         crossAxisCount: 2,
-        childAspectRatio: 1.1,
         mainAxisSpacing: 16,
         crossAxisSpacing: 16,
         children: [
           _DashboardCard(
-            icon: Icons.schedule,
-            label: 'Lihat Jadwal Pelajaran',
-            color: Colors.teal,
-            onTap: () {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(const SnackBar(content: Text('Belum tersedia')));
-            },
-          ),
-          _DashboardCard(
-            icon: Icons.grade,
-            label: 'Lihat Nilai',
-            color: Colors.amber,
-            onTap: () {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(const SnackBar(content: Text('Belum tersedia')));
-            },
-          ),
-          _DashboardCard(
-            icon: Icons.picture_as_pdf,
-            label: 'Lihat / Ekspor Rapor',
-            color: Colors.redAccent,
+            icon: Icons.assignment,
+            label: 'Input Nilai',
+            color: Colors.orange,
             onTap: () {},
           ),
           _DashboardCard(
-            icon: Icons.campaign,
-            label: 'Pengumuman',
-            color: Colors.indigo,
+            icon: Icons.schedule,
+            label: 'Jadwal Mengajar',
+            color: Colors.green,
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => AnnouncementScreen(isTeacher: false),
+                  builder: (_) => TeacherScheduleScreen(teacherName: teacherName),
+                ),
+              );
+            },
+          ),
+          _DashboardCard(
+            icon: Icons.campaign,
+            label: 'Pengumuman',
+            color: Colors.blue,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AnnouncementScreen(role: "guru"),
                 ),
               );
             },
@@ -99,28 +97,26 @@ class _DashboardCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4,
       color: color.withOpacity(0.2),
+      elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: onTap,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 48, color: color),
-              const SizedBox(height: 10),
-              Text(
-                label,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                    fontSize: 16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 40, color: color),
+            const SizedBox(height: 10),
+            Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: color,
+                fontSize: 16,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
