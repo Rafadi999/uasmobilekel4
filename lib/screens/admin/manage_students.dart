@@ -48,7 +48,7 @@ class ManageStudentsScreen extends StatelessWidget {
             onPressed: () async {
               final data = {
                 'email': _email.text.trim(),
-                'name': _name.text.trim(),
+                'nama': _name.text.trim(),
                 'nis': _nis.text.trim(),
                 'kelas': _kelas.text.trim(),
                 'jurusan': _jurusan.text.trim(),
@@ -105,7 +105,31 @@ class ManageStudentsScreen extends StatelessWidget {
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => _db.collection('users').doc(s.id).delete(),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: const Text('Hapus Siswa'),
+                            content: Text('Yakin ingin menghapus ${s.nama}?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(ctx),
+                                child: const Text('Batal', style: TextStyle(color: Colors.black)),
+                              ),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  await _db.collection('users').doc(s.id).delete();
+                                  Navigator.pop(ctx);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red,
+                                ),
+                                child: const Text('Hapus', style: TextStyle(color: Colors.black)),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
