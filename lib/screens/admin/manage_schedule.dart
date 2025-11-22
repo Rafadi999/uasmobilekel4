@@ -9,7 +9,7 @@ class ManageScheduleScreen extends StatelessWidget {
     final provider = Provider.of<ScheduleProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text("Manage Schedule")),
+      appBar: AppBar(title: Text("Manage Jadwal")),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _openForm(context),
         child: Icon(Icons.add),

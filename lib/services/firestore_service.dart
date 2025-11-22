@@ -82,7 +82,6 @@
     }
 
     // ================= 📚 JADWAL =================
-    // Tidak MERUBAH fungsi lain, hanya melengkapi jadwal
 
     /// 🔹 Ambil semua jadwal (Admin)
     Stream<List<Schedule>> getJadwalStream() {
@@ -91,46 +90,37 @@
           .orderBy('waktumulai')
           .snapshots()
           .map((snapshot) {
-        return snapshot.docs
-            .map((doc) => Schedule.fromFirestore(
-                  doc as DocumentSnapshot<Map<String, dynamic>>,
-                ))
-            .toList();
+        return snapshot.docs.map((doc) {
+          return Schedule.fromFirestore(doc.id, doc.data());
+        }).toList();
       });
     }
 
-    /// 🔹 Ambil jadwal berdasarkan kelas (Siswa/Guru)
+    /// 🔹 Ambil jadwal berdasarkan kelas
     Stream<List<Schedule>> getJadwalByClass(String className) {
       return _firestore
           .collection('jadwal')
           .where('namakelas', isEqualTo: className)
-          .orderBy('waktumulai')
           .snapshots()
           .map((snapshot) {
-        return snapshot.docs
-            .map((doc) => Schedule.fromFirestore(
-                  doc as DocumentSnapshot<Map<String, dynamic>>,
-                ))
-            .toList();
+        return snapshot.docs.map((doc) {
+          return Schedule.fromFirestore(doc.id, doc.data());
+        }).toList();
       });
     }
 
-    /// 🔹 Ambil jadwal berdasarkan ID Guru (Teacher)
+    /// 🔹 Ambil jadwal berdasarkan guru
     Stream<List<Schedule>> getJadwalByTeacher(String teacherId) {
       return _firestore
           .collection('jadwal')
           .where('idguru', isEqualTo: teacherId)
-          .orderBy('waktumulai')
           .snapshots()
           .map((snapshot) {
-        return snapshot.docs
-            .map((doc) => Schedule.fromFirestore(
-                  doc as DocumentSnapshot<Map<String, dynamic>>,
-                ))
-            .toList();
+        return snapshot.docs.map((doc) {
+          return Schedule.fromFirestore(doc.id, doc.data());
+        }).toList();
       });
     }
-
 
     /// 🔹 Tambah jadwal
     Future<void> addJadwal(Schedule jadwal) async {
@@ -139,10 +129,7 @@
 
     /// 🔹 Update jadwal
     Future<void> updateJadwal(Schedule jadwal) async {
-      await _firestore
-          .collection('jadwal')
-          .doc(jadwal.id)
-          .update(jadwal.toMap());
+      await _firestore.collection('jadwal').doc(jadwal.id).update(jadwal.toMap());
     }
 
     /// 🔹 Hapus jadwal

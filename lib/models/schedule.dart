@@ -25,22 +25,21 @@ class Schedule {
     required this.waktuselesai,
   });
 
-  factory Schedule.fromFirestore(dynamic doc) {
-    final data = doc.data() as Map<String, dynamic>;
-
+  factory Schedule.fromFirestore(String id, Map<String, dynamic> data) {
     return Schedule(
-      id: doc.id,
-      guru: data['guru'],
-      hari: data['hari'],
-      idguru: data['idguru'],
-      idkelas: data['idkelas'],
-      namakelas: data['namakelas'],
-      pelajaran: data['pelajaran'],
-      role: data['role'],
-      waktumulai: data['waktumulai'],
-      waktuselesai: data['waktuselesai'],
+      id: id,
+      guru: data['guru'] ?? '',
+      pelajaran: data['pelajaran'] ?? '',
+      hari: data['hari'] ?? '',
+      idguru: data['idguru'] ?? '',
+      idkelas: data['idkelas'] ?? '',
+      namakelas: data['namakelas'] ?? '',
+      role: data['role'] ?? '',
+      waktumulai: data['waktumulai'] ?? '',
+      waktuselesai: data['waktuselesai'] ?? '',
     );
   }
+
 
   Map<String, dynamic> toMap() {
     return {
