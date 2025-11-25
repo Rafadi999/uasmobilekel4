@@ -29,8 +29,39 @@ class ManageScheduleScreen extends StatelessWidget {
                   onPressed: () => _openForm(context, schedule: s),
                 ),
                 IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () => provider.deleteSchedule(s.id),
+                  icon: Icon(Icons.delete, color: Colors.red),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text("Hapus Jadwal"),
+                        content: Text(
+                            "Yakin ingin menghapus jadwal ${s.pelajaran} untuk kelas ${s.namakelas}?"),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text(
+                              "Batal",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              provider.deleteSchedule(s.id);
+                              Navigator.pop(ctx);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                            ),
+                            child: const Text(
+                              "Hapus",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ],
             ),

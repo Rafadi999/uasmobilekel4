@@ -53,7 +53,36 @@ class ManageAnnouncementsScreen extends StatelessWidget {
                       IconButton(
                         icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () {
-                          provider.delete(data.id);
+                          showDialog(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text('Hapus Pengumuman'),
+                              content: Text(
+                                  'Yakin ingin menghapus "${data.nama}" ?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx),
+                                  child: const Text(
+                                    'Batal',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    provider.delete(data.id);
+                                    Navigator.pop(ctx);
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                  ),
+                                  child: const Text(
+                                    'Hapus',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
                         },
                       ),
                     ],
@@ -88,7 +117,8 @@ class AddEditAnnouncementScreen extends StatefulWidget {
       _AddEditAnnouncementScreenState();
 }
 
-class _AddEditAnnouncementScreenState extends State<AddEditAnnouncementScreen> {
+class _AddEditAnnouncementScreenState
+    extends State<AddEditAnnouncementScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _namaController = TextEditingController();
   final TextEditingController _tentangController = TextEditingController();
@@ -122,19 +152,22 @@ class _AddEditAnnouncementScreenState extends State<AddEditAnnouncementScreen> {
             children: [
               TextFormField(
                 controller: _namaController,
-                decoration: const InputDecoration(labelText: "Judul Pengumuman"),
+                decoration:
+                    const InputDecoration(labelText: "Judul Pengumuman"),
                 validator: (value) =>
                     value!.isEmpty ? "Judul tidak boleh kosong" : null,
               ),
               TextFormField(
                 controller: _tentangController,
-                decoration: const InputDecoration(labelText: "Isi Pengumuman"),
+                decoration:
+                    const InputDecoration(labelText: "Isi Pengumuman"),
                 validator: (value) =>
                     value!.isEmpty ? "Isi tidak boleh kosong" : null,
               ),
               DropdownButtonFormField(
                 value: _targetRole,
-                decoration: const InputDecoration(labelText: "Ditujukan Untuk"),
+                decoration:
+                    const InputDecoration(labelText: "Ditujukan Untuk"),
                 items: const [
                   DropdownMenuItem(value: "all", child: Text("Semua")),
                   DropdownMenuItem(value: "guru", child: Text("Guru")),
@@ -167,8 +200,9 @@ class _AddEditAnnouncementScreenState extends State<AddEditAnnouncementScreen> {
 
                   Navigator.pop(context);
                 },
-                child: Text(
-                    widget.announcement == null ? "Tambah" : "Simpan Perubahan"),
+                child: Text(widget.announcement == null
+                    ? "Tambah"
+                    : "Simpan Perubahan"),
               ),
             ],
           ),

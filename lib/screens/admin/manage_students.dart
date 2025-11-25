@@ -43,7 +43,10 @@ class ManageStudentsScreen extends StatelessWidget {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Batal')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Batal'),
+          ),
           ElevatedButton(
             onPressed: () async {
               final data = {
@@ -114,17 +117,38 @@ class ManageStudentsScreen extends StatelessWidget {
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(ctx),
-                                child: const Text('Batal', style: TextStyle(color: Colors.black)),
+                                child: const Text(
+                                  'Batal',
+                                  style: TextStyle(color: Colors.black),
+                                ),
                               ),
                               ElevatedButton(
                                 onPressed: () async {
-                                  await _db.collection('users').doc(s.id).delete();
-                                  Navigator.pop(ctx);
+                                  try {
+                                    await _db.collection('users').doc(s.id).delete();
+                                    Navigator.pop(ctx);
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text("${s.nama} berhasil dihapus"),
+                                        duration: const Duration(seconds: 2),
+                                      ),
+                                    );
+                                  } catch (e) {
+                                    Navigator.pop(ctx);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text("Gagal menghapus: $e"),
+                                        duration: const Duration(seconds: 3),
+                                      ),
+                                    );
+                                  }
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.red,
+                                  foregroundColor: Colors.white,
                                 ),
-                                child: const Text('Hapus', style: TextStyle(color: Colors.black)),
+                                child: const Text('Hapus'),
                               ),
                             ],
                           ),
