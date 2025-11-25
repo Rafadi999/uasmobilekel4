@@ -57,8 +57,8 @@ class ManageAnnouncementsScreen extends StatelessWidget {
                             context: context,
                             builder: (ctx) => AlertDialog(
                               title: const Text('Hapus Pengumuman'),
-                              content: Text(
-                                  'Yakin ingin menghapus "${data.nama}" ?'),
+                              content:
+                                  Text('Yakin ingin menghapus "${data.nama}" ?'),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(ctx),

@@ -1,12 +1,13 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:uasmobile_kelompok4/screens/admin/manage_announcements.dart';
 import '../../providers/theme_provider.dart';
 import '../../services/auth_service.dart';
 import '../auth/login_screen.dart';
 import 'manage_students.dart';
 import 'manage_teachers.dart';
-import 'manage_schedule.dart'; // Import layar jadwal
+import 'manage_schedule.dart';
+import '../admin/manage_announcements.dart';
 
 class AdminDashboard extends StatelessWidget {
   const AdminDashboard({super.key});
@@ -14,13 +15,20 @@ class AdminDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
+    final isDark = theme.isDarkMode;
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text("Dashboard Admin"),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        title: const Text(
+          "Dashboard Admin",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         actions: [
           IconButton(
-            icon: Icon(theme.isDarkMode ? Icons.light_mode : Icons.dark_mode),
+            icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
             onPressed: theme.toggleTheme,
           ),
           IconButton(
@@ -36,57 +44,155 @@ class AdminDashboard extends StatelessWidget {
           ),
         ],
       ),
-      body: GridView.count(
-        padding: const EdgeInsets.all(20),
-        crossAxisCount: 2,
-        childAspectRatio: 1.1,
-        mainAxisSpacing: 16,
-        crossAxisSpacing: 16,
+
+      body: Stack(
         children: [
-          _DashboardCard(
-            icon: Icons.people,
-            label: 'Kelola Data Siswa',
-            color: Colors.blueAccent,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => ManageStudentsScreen()),
-              );
-            },
+          // Background gradient sama dengan login
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: isDark
+                    ? [const Color(0xFF1E2749), const Color(0xFF131A32)]
+                    : [Colors.blue.shade400, Colors.blue.shade800],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
           ),
-          _DashboardCard(
-            icon: Icons.school,
-            label: 'Kelola Data Guru',
-            color: Colors.orangeAccent,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => ManageTeachersScreen()),
-              );
-            },
+
+          // Decorative circles
+          Positioned(
+            top: -120,
+            left: -120,
+            child: Container(
+              width: 260,
+              height: 260,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.08),
+              ),
+            ),
           ),
-          _DashboardCard(
-            icon: Icons.schedule,
-            label: 'Kelola Jadwal',
-            color: Colors.green,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => ManageScheduleScreen()),
-              );
-            },
+          Positioned(
+            bottom: -150,
+            right: -120,
+            child: Container(
+              width: 280,
+              height: 280,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.06),
+              ),
+            ),
           ),
-          _DashboardCard(
-            icon: Icons.campaign,
-            label: 'Kelola Pengumuman',
-            color: Colors.purple,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ManageAnnouncementsScreen())
-              );
-            },
-          ),
+
+          // MAIN CONTENT (Glassmorphism Card + Grid)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 110),
+
+                  // HEADER CARD
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(25),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(25),
+                          border: Border.all(
+                              color: Colors.white.withOpacity(0.2)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.admin_panel_settings,
+                                size: 50, color: Colors.white),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Text(
+                                "Selamat Datang, Admin!",
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white.withOpacity(0.95),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 25),
+
+                  // GRID MENU
+                  GridView.count(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    crossAxisCount: 2,
+                    childAspectRatio: 1,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    children: [
+                      _DashboardCard(
+                        label: "Kelola Siswa",
+                        icon: Icons.people_alt,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => ManageStudentsScreen()),
+                          );
+                        },
+                      ),
+                      _DashboardCard(
+                        label: "Kelola Guru",
+                        icon: Icons.school_rounded,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => ManageTeachersScreen()),
+                          );
+                        },
+                      ),
+                      _DashboardCard(
+                        label: "Kelola Jadwal",
+                        icon: Icons.schedule_rounded,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => ManageScheduleScreen()),
+                          );
+                        },
+                      ),
+                      _DashboardCard(
+                        label: "Kelola Pengumuman",
+                        icon: Icons.campaign_rounded,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) =>
+                                    const ManageAnnouncementsScreen()),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 40),
+                ],
+              ),
+            ),
+          )
         ],
       ),
     );
@@ -94,43 +200,52 @@ class AdminDashboard extends StatelessWidget {
 }
 
 class _DashboardCard extends StatelessWidget {
-  final IconData icon;
   final String label;
-  final Color color;
+  final IconData icon;
   final VoidCallback onTap;
 
   const _DashboardCard({
-    required this.icon,
     required this.label,
-    required this.color,
+    required this.icon,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      color: color.withOpacity(0.2),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 48, color: color),
-              const SizedBox(height: 10),
-              Text(
-                label,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                  fontSize: 16,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(22),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Material(
+          color: Colors.white.withOpacity(0.10),
+          child: InkWell(
+            onTap: onTap,
+            child: Container(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.25),
                 ),
-                textAlign: TextAlign.center,
               ),
-            ],
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(icon, size: 55, color: Colors.white),
+                  const SizedBox(height: 12),
+                  Text(
+                    label,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
+                  )
+                ],
+              ),
+            ),
           ),
         ),
       ),
