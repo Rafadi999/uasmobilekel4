@@ -6,6 +6,8 @@ import '../auth/login_screen.dart';
 import '../teacher/announcement_screen.dart';
 import '../teacher/teacher_schedule.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../screens/nilai/select_mapel_screen.dart';
+
 
 class TeacherDashboard extends StatelessWidget {
   const TeacherDashboard({super.key});
@@ -44,11 +46,16 @@ class TeacherDashboard extends StatelessWidget {
         crossAxisSpacing: 16,
         children: [
           _DashboardCard(
-            icon: Icons.assignment,
-            label: 'Input Nilai',
-            color: Colors.orange,
-            onTap: () {},
-          ),
+  icon: Icons.assignment,
+  label: 'Input Nilai',
+  color: Colors.orange,
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => SelectMapelScreen()),
+    );
+  },
+),
           _DashboardCard(
             icon: Icons.schedule,
             label: 'Jadwal Mengajar',

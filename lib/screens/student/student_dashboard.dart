@@ -6,6 +6,8 @@ import '../../services/auth_service.dart';
 import '../auth/login_screen.dart';
 import '../teacher/announcement_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'nilai/student_nilai_screen.dart';
+
 
 class StudentDashboard extends StatelessWidget {
   const StudentDashboard({super.key});
@@ -60,14 +62,16 @@ class StudentDashboard extends StatelessWidget {
             },
           ),
           _DashboardCard(
-            icon: Icons.grade,
-            label: 'Lihat Nilai',
-            color: Colors.amber,
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Belum tersedia')));
-            },
-          ),
+  icon: Icons.grade,
+  label: 'Lihat Nilai',
+  color: Colors.amber,
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const StudentNilaiScreen()),
+    );
+  },
+),
           _DashboardCard(
             icon: Icons.picture_as_pdf,
             label: 'Lihat / Ekspor Rapor',
