@@ -53,50 +53,6 @@ class TeacherDashboard extends StatelessWidget {
 
       body: Padding(
         padding: const EdgeInsets.all(20),
-<<<<<<< HEAD
-        crossAxisCount: 2,
-        mainAxisSpacing: 16,
-        crossAxisSpacing: 16,
-        children: [
-          _DashboardCard(
-  icon: Icons.assignment,
-  label: 'Input Nilai',
-  color: Colors.orange,
-  onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => SelectMapelScreen()),
-    );
-  },
-),
-          _DashboardCard(
-            icon: Icons.schedule,
-            label: 'Jadwal Mengajar',
-            color: Colors.green,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => TeacherScheduleScreen(teacherId: currentUser?.uid ?? "", teacherName: teacherName,),
-                ),
-              );
-            },
-          ),
-          _DashboardCard(
-            icon: Icons.campaign,
-            label: 'Pengumuman',
-            color: Colors.blue,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => AnnouncementScreen(role: "guru"),
-                ),
-              );
-            },
-          ),
-        ],
-=======
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -170,7 +126,6 @@ class TeacherDashboard extends StatelessWidget {
             ),
           ],
         ),
->>>>>>> d96931a40b2aa92daa8bfb1f447f27d5d15e9a36
       ),
     );
   }

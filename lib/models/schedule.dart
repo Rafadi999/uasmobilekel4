@@ -27,8 +27,6 @@ class Schedule {
     required this.waktuselesai,
   });
 
-<<<<<<< HEAD
-  /// ✔ DIPAKAI OLEH FIRESTORE SNAPSHOT
   factory Schedule.fromFirestore(String id, Map<String, dynamic> data) {
     return Schedule(
       id: id,
@@ -60,8 +58,7 @@ class Schedule {
     );
   }
 
-  /// ✔ Untuk add / update
-=======
+  
   factory Schedule.fromDoc(DocumentSnapshot doc) {
     final d = doc.data() as Map<String, dynamic>;
     return Schedule(
@@ -79,7 +76,6 @@ class Schedule {
     );
   }
   
->>>>>>> d96931a40b2aa92daa8bfb1f447f27d5d15e9a36
   Map<String, dynamic> toMap() {
     return {
       'guru': guru,
@@ -93,9 +89,6 @@ class Schedule {
       'waktuselesai': waktuselesai,
     };
   }
-<<<<<<< HEAD
-}
-=======
 
   Map<String, dynamic> toMapForCreate() {
     return {
@@ -126,4 +119,3 @@ class Schedule {
     };
   }
 }
->>>>>>> d96931a40b2aa92daa8bfb1f447f27d5d15e9a36
