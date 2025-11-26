@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../teacher/input_grade_list_screen.dart'; // nanti kamu sesuaikan tujuan navigasinya
+import '../teacher/input_grade_list_screen.dart';
 
 class SelectMapelScreen extends StatefulWidget {
   final String teacherId;
@@ -31,29 +31,36 @@ class _SelectMapelScreenState extends State<SelectMapelScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Pilih Mata Pelajaran")),
+      appBar: AppBar(title: const Text("Pilih Mata Pelajaran")),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            StreamBuilder<List<String>>(
-              stream: getMapel(),
-              builder: (context, snap) {
-                if (!snap.hasData) {
-                  return const CircularProgressIndicator();
-                }
+        child: StreamBuilder<List<String>>(
+          stream: getMapel(),
+          builder: (context, snap) {
+            if (snap.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-                final mapel = snap.data!;
+            if (snap.hasError) {
+              return Center(
+                child: Text("Error: ${snap.error}"),
+              );
+            }
 
-                if (mapel.isEmpty) {
-                  return const Text(
-                    "Tidak ada data mata pelajaran.\nTambahkan koleksi 'mapel' di Firestore.",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.red),
-                  );
-                }
+            if (!snap.hasData || snap.data!.isEmpty) {
+              return const Center(
+                child: Text(
+                  "Tidak ada mata pelajaran.\nTambahkan koleksi 'mapel' di Firestore.",
+                  textAlign: TextAlign.center,
+                ),
+              );
+            }
 
-                return DropdownButtonFormField(
+            final mapel = snap.data!;
+
+            return Column(
+              children: [
+                DropdownButtonFormField(
                   decoration: const InputDecoration(
                     labelText: "Pilih Mata Pelajaran",
                     border: OutlineInputBorder(),
@@ -70,29 +77,29 @@ class _SelectMapelScreenState extends State<SelectMapelScreen> {
                       selectedMapel = val.toString();
                     });
                   },
-                );
-              },
-            ),
+                ),
 
-            const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-            ElevatedButton(
-              onPressed: selectedMapel == null
-                  ? null
-                  : () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => InputGradeListScreen(
-                            subject: selectedMapel!,
-                            teacherId: widget.teacherId,
-                          ),
-                        ),
-                      );
-                    },
-              child: const Text("Lanjut"),
-            )
-          ],
+                ElevatedButton(
+                  onPressed: selectedMapel == null
+                      ? null
+                      : () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => InputGradeListScreen(
+                                subject: selectedMapel!,
+                                teacherId: widget.teacherId,
+                              ),
+                            ),
+                          );
+                        },
+                  child: const Text("Lanjut"),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

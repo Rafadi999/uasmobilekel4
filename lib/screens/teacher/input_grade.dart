@@ -4,14 +4,14 @@ import '../../models/grade.dart';
 import '../../providers/grade_provider.dart';
 
 class InputGradeScreen extends StatefulWidget {
-  final String studentId;
+  final String siswaId;
   final String studentName;
   final String subject;
   final Grade? existingGrade;
 
   const InputGradeScreen({
     super.key,
-    required this.studentId,
+    required this.siswaId,
     required this.studentName,
     required this.subject,
     this.existingGrade,
@@ -33,6 +33,7 @@ class _InputGradeScreenState extends State<InputGradeScreen> {
   @override
   void initState() {
     super.initState();
+
     if (widget.existingGrade != null) {
       _tugasCtrl.text = widget.existingGrade!.tugas.toString();
       _utsCtrl.text = widget.existingGrade!.uts.toString();
@@ -47,16 +48,16 @@ class _InputGradeScreenState extends State<InputGradeScreen> {
     final a = double.tryParse(_uasCtrl.text) ?? 0;
 
     final nilai = t * 0.3 + u * 0.3 + a * 0.4;
-    String predikat;
 
-    if (nilai >= 85) predikat = 'A';
-    else if (nilai >= 75) predikat = 'B';
-    else if (nilai >= 65) predikat = 'C';
-    else predikat = 'D';
+    String pred;
+    if (nilai >= 85) pred = "A";
+    else if (nilai >= 75) pred = "B";
+    else if (nilai >= 65) pred = "C";
+    else pred = "D";
 
     setState(() {
       _nilaiAkhir = nilai;
-      _predikat = predikat;
+      _predikat = pred;
     });
   }
 
@@ -67,7 +68,7 @@ class _InputGradeScreenState extends State<InputGradeScreen> {
 
     final grade = Grade(
       id: widget.existingGrade?.id ?? "",
-      studentId: widget.studentId,
+      siswaId: widget.siswaId,
       subject: widget.subject,
       tugas: double.tryParse(_tugasCtrl.text) ?? 0,
       uts: double.tryParse(_utsCtrl.text) ?? 0,
@@ -77,12 +78,12 @@ class _InputGradeScreenState extends State<InputGradeScreen> {
     if (widget.existingGrade == null) {
       await provider.addGrade(grade);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Nilai ditambahkan")),
+        const SnackBar(content: Text("Nilai berhasil disimpan!")),
       );
     } else {
       await provider.updateGrade(grade);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Nilai diperbarui")),
+        const SnackBar(content: Text("Nilai berhasil diperbarui!")),
       );
     }
 
@@ -99,15 +100,15 @@ class _InputGradeScreenState extends State<InputGradeScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              Text("Siswa: ${widget.studentName}"),
+              Text("Siswa: ${widget.studentName}",
+                  style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 12),
 
               TextFormField(
                 controller: _tugasCtrl,
                 decoration: const InputDecoration(labelText: "Nilai Tugas"),
                 keyboardType: TextInputType.number,
-                validator: (value) =>
-                    value == null || value.isEmpty ? "Wajib diisi" : null,
+                validator: (v) => v == null || v.isEmpty ? "Wajib diisi" : null,
                 onChanged: (_) => _hitung(),
               ),
 
@@ -115,8 +116,7 @@ class _InputGradeScreenState extends State<InputGradeScreen> {
                 controller: _utsCtrl,
                 decoration: const InputDecoration(labelText: "Nilai UTS"),
                 keyboardType: TextInputType.number,
-                validator: (value) =>
-                    value == null || value.isEmpty ? "Wajib diisi" : null,
+                validator: (v) => v == null || v.isEmpty ? "Wajib diisi" : null,
                 onChanged: (_) => _hitung(),
               ),
 
@@ -124,8 +124,7 @@ class _InputGradeScreenState extends State<InputGradeScreen> {
                 controller: _uasCtrl,
                 decoration: const InputDecoration(labelText: "Nilai UAS"),
                 keyboardType: TextInputType.number,
-                validator: (value) =>
-                    value == null || value.isEmpty ? "Wajib diisi" : null,
+                validator: (v) => v == null || v.isEmpty ? "Wajib diisi" : null,
                 onChanged: (_) => _hitung(),
               ),
 
@@ -139,8 +138,10 @@ class _InputGradeScreenState extends State<InputGradeScreen> {
 
               if (_nilaiAkhir != null) ...[
                 const SizedBox(height: 12),
-                Text("Nilai Akhir: ${_nilaiAkhir!.toStringAsFixed(2)}"),
-                Text("Predikat: $_predikat"),
+                Text("Nilai Akhir: ${_nilaiAkhir!.toStringAsFixed(2)}",
+                    style: const TextStyle(fontSize: 18)),
+                Text("Predikat: $_predikat",
+                    style: const TextStyle(fontSize: 18)),
               ],
 
               const SizedBox(height: 30),

@@ -125,7 +125,7 @@ Stream<List<Schedule>> getJadwalByTeacher(String teacherId) {
   Stream<List<Nilai>> streamNilaiByStudent(String studentId) {
     return _db
         .collection("nilai")
-        .where("idSiswa", isEqualTo: studentId)
+        .where("siswaId", isEqualTo: studentId)
         .snapshots()
         .map((snap) =>
             snap.docs.map((d) => Nilai.fromMap(d.id, d.data())).toList());

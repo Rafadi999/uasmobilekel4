@@ -7,6 +7,7 @@ import 'providers/student_provider.dart';
 import 'providers/teacher_provider.dart';
 import 'providers/announcement_provider.dart';
 import 'providers/schedule_provider.dart';
+import 'providers/grade_provider.dart'; // ⬅ WAJIB TAMBAH
 
 import 'screens/auth/login_screen.dart';
 import 'firebase_options.dart';
@@ -14,7 +15,6 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inisialisasi Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -25,8 +25,9 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => StudentProvider()),
         ChangeNotifierProvider(create: (_) => TeacherProvider()),
-        ChangeNotifierProvider(create: (_) => AnnouncementProvider()), // ⬅ baru ditambahkan
-        ChangeNotifierProvider(create: (_) => ScheduleProvider()), // ⬅ baru ditambahkan
+        ChangeNotifierProvider(create: (_) => AnnouncementProvider()),
+        ChangeNotifierProvider(create: (_) => ScheduleProvider()),
+        ChangeNotifierProvider(create: (_) => GradeProvider()), // ⬅ FIX DISINI
       ],
       child: const MyApp(),
     ),
