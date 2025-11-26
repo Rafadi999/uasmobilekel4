@@ -13,14 +13,18 @@ class FirestoreService {
   // 👥 USERS
   // ============================================================
 
-  Stream<List<Student>> getStudentsStream() {
-    return _db
-        .collection('users')
-        .where('role', isEqualTo: 'siswa')
-        .snapshots()
-        .map((snap) =>
-            snap.docs.map((d) => Student.fromMap(d.id, d.data())).toList());
-  }
+  // Mengambil data siswa dari collection "users"
+// Hanya yang role = "siswa"
+// Mengembalikan Stream<List<Student>> yang bisa langsung dipakai di StreamBuilder
+Stream<List<Student>> getStudentsStream() {
+  return _db
+      .collection('users')
+      .where('role', isEqualTo: 'siswa')
+      .snapshots()
+      .map((snap) =>
+          snap.docs.map((d) => Student.fromMap(d.id, d.data())).toList());
+}
+
 
   Stream<List<Teacher>> getTeachersStream() {
     return _db
@@ -83,14 +87,15 @@ class FirestoreService {
         );
   }
 
-  Stream<List<Schedule>> getJadwalByTeacher(String teacherId) {
-    return _db
-        .collection('jadwal')
-        .where('idguru', isEqualTo: teacherId)
-        .snapshots()
-        .map((snap) =>
-            snap.docs.map((d) => Schedule.fromMap(d.id, d.data())).toList());
-  }
+  // lib/services/firestore_service.dart
+Stream<List<Schedule>> getJadwalByTeacher(String teacherId) {
+  return _db
+      .collection('jadwal')
+      .where('idguru', isEqualTo: teacherId)
+      .snapshots()
+      .map((snap) =>
+          snap.docs.map((d) => Schedule.fromMap(d.id, d.data())).toList());
+}
 
   Stream<List<Schedule>> getJadwalByClass(String className) {
     return _db

@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import '../../models/student.dart';
-import '../../services/firestore_service.dart';
 import '../../models/nilai.dart';
+import '../../services/firestore_service.dart';
 
 class InputNilaiForm extends StatefulWidget {
   final Student siswa;
   final String mapel;
 
-  const InputNilaiForm({super.key, required this.siswa, required this.mapel});
+  const InputNilaiForm({
+    super.key,
+    required this.siswa,
+    required this.mapel,
+  });
 
   @override
   State<InputNilaiForm> createState() => _InputNilaiFormState();
@@ -51,18 +55,30 @@ class _InputNilaiFormState extends State<InputNilaiForm> {
             Text("Mapel: ${widget.mapel}", style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 20),
 
-            TextField(controller: tugasC, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: "Nilai Tugas")),
-            TextField(controller: utsC, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: "Nilai UTS")),
-            TextField(controller: uasC, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: "Nilai UAS")),
+            TextField(
+              controller: tugasC,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: "Nilai Tugas"),
+            ),
+            TextField(
+              controller: utsC,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: "Nilai UTS"),
+            ),
+            TextField(
+              controller: uasC,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: "Nilai UAS"),
+            ),
 
             const SizedBox(height: 20),
             ElevatedButton(onPressed: hitung, child: const Text("Hitung")),
 
+            const SizedBox(height: 10),
             Text("Nilai Akhir: ${nilaiAkhir.toStringAsFixed(1)}", style: const TextStyle(fontSize: 18)),
             Text("Predikat: $predikat", style: const TextStyle(fontSize: 18)),
 
             const SizedBox(height: 20),
-
             ElevatedButton(
               onPressed: () async {
                 hitung();
@@ -70,9 +86,9 @@ class _InputNilaiFormState extends State<InputNilaiForm> {
                 final nilai = Nilai(
                   siswaId: widget.siswa.id,
                   mapel: widget.mapel,
-                  tugas: double.parse(tugasC.text),
-                  uts: double.parse(utsC.text),
-                  uas: double.parse(uasC.text),
+                  tugas: double.tryParse(tugasC.text) ?? 0,
+                  uts: double.tryParse(utsC.text) ?? 0,
+                  uas: double.tryParse(uasC.text) ?? 0,
                   nilaiAkhir: nilaiAkhir,
                   predikat: predikat,
                 );

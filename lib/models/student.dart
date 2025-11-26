@@ -30,15 +30,14 @@ class Student {
   }
 
   // Buat dari Firestore Map (hindari null error)
-  factory Student.fromMap(String id, Map<String, dynamic> map) {
-    return Student(
-      id: id,
-      nama: (map['nama'] ?? '').toString(),
-      email: (map['email'] ?? '').toString(),
-      nis: (map['nis'] ?? '').toString(),
-      kelas: (map['kelas'] ?? '').toString(),
-      jurusan: (map['jurusan'] ?? '').toString(),
-      role: (map['role'] ?? 'siswa').toString(),
-    );
-  }
+  factory Student.fromMap(String id, Map<String, dynamic> data) {
+  return Student(
+    id: id,
+    nis: data['nis'] ?? '',
+    nama: data['nama'] ?? '',
+    kelas: data['kelas'] ?? '',
+    email: data['email'] ?? '',
+    jurusan: data['jurusan'] ?? '',
+  );
+}
 }

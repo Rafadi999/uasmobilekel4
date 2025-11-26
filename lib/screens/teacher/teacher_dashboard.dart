@@ -85,13 +85,23 @@ class TeacherDashboard extends StatelessWidget {
                 mainAxisSpacing: 20,
                 children: [
                   _DashboardCard(
-                    icon: Icons.assignment_rounded,
-                    label: "Input Nilai",
-                    color: Colors.orange.shade700,
-                    onTap: () {
-                      // Tambahkan navigasi fitur nilai jika sudah siap
-                    },
-                  ),
+  icon: Icons.assignment_rounded,
+  label: "Input Nilai",
+  color: Colors.orange.shade700,
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SelectMapelScreen(
+          teacherId: currentUser?.uid ?? "",
+          teacherName: teacherName,
+        ),
+      ),
+    );
+  },
+),
+
+
                   _DashboardCard(
                     icon: Icons.schedule_rounded,
                     label: "Jadwal Mengajar",
