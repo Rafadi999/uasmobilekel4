@@ -138,4 +138,14 @@ Stream<List<Student>> getStudentsStream() {
   Future<void> saveNilai(Nilai nilai) async {
     await _db.collection("nilai").add(nilai.toMap());
   }
+
+  Stream<List<Nilai>> streamSemuaNilai() {
+  return _db
+      .collection("nilai")
+.snapshots()
+
+      .map((snap) =>
+          snap.docs.map((d) => Nilai.fromMap(d.id, d.data())).toList());
+}
+
 }
