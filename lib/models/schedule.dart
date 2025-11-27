@@ -1,121 +1,66 @@
+// lib/models/schedule.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Schedule {
   final String id;
   final String guru;
-  final String hari;
   final String idguru;
-  final String idkelas;
-  final String namakelas;
+  final String hari;
   final String pelajaran;
-  final String role;
-  final Timestamp? waktudibuat;
   final String waktumulai;
   final String waktuselesai;
+  final String idkelas;
+  final String namakelas;
+  final String role;
+  final Timestamp? createdAt;
 
   Schedule({
     required this.id,
     required this.guru,
-    required this.hari,
     required this.idguru,
-    required this.idkelas,
-    required this.namakelas,
+    required this.hari,
     required this.pelajaran,
-    required this.role,
-    this.waktudibuat,
     required this.waktumulai,
     required this.waktuselesai,
+    required this.idkelas,
+    required this.namakelas,
+    required this.role,
+    this.createdAt,
   });
 
-  factory Schedule.fromFirestore(String id, Map<String, dynamic> data) {
-    return Schedule(
-      id: id,
-      guru: data['guru'] ?? '',
-      hari: data['hari'] ?? '',
-      idguru: data['idguru'] ?? '',
-      idkelas: data['idkelas'] ?? '',
-      namakelas: data['namakelas'] ?? '',
-      pelajaran: data['pelajaran'] ?? '',
-      role: data['role'] ?? '',
-      waktumulai: data['waktumulai'] ?? '',
-      waktuselesai: data['waktuselesai'] ?? '',
-    );
-  }
-
-  /// ✔ Tambahkan ini agar error Schedule.fromMap hilang
   factory Schedule.fromMap(String id, Map<String, dynamic> data) {
     return Schedule(
       id: id,
       guru: data['guru'] ?? '',
-      hari: data['hari'] ?? '',
       idguru: data['idguru'] ?? '',
-      idkelas: data['idkelas'] ?? '',
-      namakelas: data['namakelas'] ?? '',
+      hari: data['hari'] ?? '',
       pelajaran: data['pelajaran'] ?? '',
-      role: data['role'] ?? '',
       waktumulai: data['waktumulai'] ?? '',
       waktuselesai: data['waktuselesai'] ?? '',
+      idkelas: data['idkelas'] ?? '',
+      namakelas: data['namakelas'] ?? '',
+      role: data['role'] ?? 'all',
+      createdAt: data['createdAt'] as Timestamp?,
     );
   }
 
-  
-  factory Schedule.fromDoc(DocumentSnapshot doc) {
-    final d = doc.data() as Map<String, dynamic>;
-    return Schedule(
-      id: doc.id,
-      guru: d['guru'] ?? '',
-      hari: d['hari'] ?? '',
-      idguru: d['idguru'] ?? '',
-      idkelas: d['idkelas'] ?? '',
-      namakelas: d['namakelas'] ?? '',
-      pelajaran: d['pelajaran'] ?? '',
-      role: d['role'] ?? 'all',
-      waktudibuat: d['waktudibuat'] as Timestamp?,
-      waktumulai: d['waktumulai'] ?? '',
-      waktuselesai: d['waktuselesai'] ?? '',
-    );
-  }
-  
+  /// NOTE:
+  /// - When creating a new schedule locally to send to Firestore, you can pass createdAt: null
+  ///   so Firestore will set server timestamp (see toMap()).
   Map<String, dynamic> toMap() {
     return {
       'guru': guru,
-      'hari': hari,
       'idguru': idguru,
-      'idkelas': idkelas,
-      'namakelas': namakelas,
+      'hari': hari,
       'pelajaran': pelajaran,
-      'role': role,
       'waktumulai': waktumulai,
       'waktuselesai': waktuselesai,
-    };
-  }
-
-  Map<String, dynamic> toMapForCreate() {
-    return {
-      'guru': guru,
-      'hari': hari,
-      'idguru': idguru,
       'idkelas': idkelas,
       'namakelas': namakelas,
-      'pelajaran': pelajaran,
       'role': role,
-      'waktudibuat': FieldValue.serverTimestamp(),
-      'waktumulai': waktumulai,
-      'waktuselesai': waktuselesai,
-    };
-  }
-
-  Map<String, dynamic> toMapForUpdate() {
-    return {
-      'guru': guru,
-      'hari': hari,
-      'idguru': idguru,
-      'idkelas': idkelas,
-      'namakelas': namakelas,
-      'pelajaran': pelajaran,
-      'role': role,
-      'waktumulai': waktumulai,
-      'waktuselesai': waktuselesai,
+      // Use server timestamp when createdAt is null (new doc). If createdAt already exists,
+      // we can set the timestamp value directly (Timestamp type).
+      'createdAt': createdAt ?? FieldValue.serverTimestamp(),
     };
   }
 }

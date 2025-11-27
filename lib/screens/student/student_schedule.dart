@@ -1,27 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/schedule_provider.dart';
-import '../../models/schedule.dart';
 
-class StudentScheduleScreen extends StatelessWidget {
-  final String className; // dari login siswa
-
+class StudentScheduleScreen extends StatefulWidget {
+  final String className;
   const StudentScheduleScreen({super.key, required this.className});
 
   @override
-  Widget build(BuildContext context) {
+  State<StudentScheduleScreen> createState() => _StudentScheduleScreenState();
+}
+
+class _StudentScheduleScreenState extends State<StudentScheduleScreen> {
+  @override
+  void initState() {
+    super.initState();
     final provider = Provider.of<ScheduleProvider>(context, listen: false);
+    provider.loadSchedules("siswa", idKelas: widget.className);
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Jadwal Kelas $className")),
-      body: StreamBuilder<List<Schedule>>(
-        stream: provider.getSchedulesByClass(className),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final schedules = snapshot.data!;
+      appBar: AppBar(title: Text("Jadwal Kelas ${widget.className}")),
+      body: Consumer<ScheduleProvider>(
+        builder: (context, provider, _) {
+          final schedules = provider.schedules;
 
           if (schedules.isEmpty) {
             return const Center(child: Text("Belum ada jadwal."));

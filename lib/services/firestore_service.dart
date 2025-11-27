@@ -76,47 +76,51 @@ Stream<List<Student>> getStudentsStream() {
     await _db.collection('pengumuman').doc(id).delete();
   }
 
-  // ============================================================
-  // 📚 JADWAL
-  // ============================================================
+  // ============================
+  // JADWAL
+  // ============================
+  Stream<List<Schedule>> getScheduleByRole({
+    required String role,
+    String? idGuru,
+    String? idKelas,
+  }) {
+    Query<Map<String, dynamic>> query = _db.collection('jadwal');
 
-  Stream<List<Schedule>> getJadwalStream() {
-    return _db.collection('jadwal').snapshots().map(
-          (snap) =>
-              snap.docs.map((d) => Schedule.fromMap(d.id, d.data())).toList(),
-        );
+    if (role == 'guru' && idGuru != null) {
+      query = query.where('idguru', isEqualTo: idGuru);
+    } else if (role == 'siswa' && idKelas != null) {
+      query = query.where('idkelas', isEqualTo: idKelas);
+    }
+    // no filter for admin/all
+
+    // Optional: order by createdAt if exists (documents without createdAt will be last)
+    try {
+      query = query.orderBy('createdAt', descending: true);
+    } catch (e) {
+      // If ordering fails because createdAt doesn't exist on some docs,
+      // ignore and return unsorted query.
+    }
+
+    return query.snapshots().map((snap) =>
+        snap.docs.map((d) => Schedule.fromMap(d.id, d.data())).toList());
   }
 
-  // lib/services/firestore_service.dart
-Stream<List<Schedule>> getJadwalByTeacher(String teacherId) {
-  return _db
-      .collection('jadwal')
-      .where('idguru', isEqualTo: teacherId)
-      .snapshots()
-      .map((snap) =>
-          snap.docs.map((d) => Schedule.fromMap(d.id, d.data())).toList());
-}
-
-  Stream<List<Schedule>> getJadwalByClass(String className) {
-    return _db
-        .collection('jadwal')
-        .where('namakelas', isEqualTo: className)
-        .snapshots()
-        .map((snap) =>
-            snap.docs.map((d) => Schedule.fromMap(d.id, d.data())).toList());
-  }
-
+  /// Add jadwal: use .doc().set() so document id is deterministic and serverTimestamp is used
   Future<void> addJadwal(Schedule s) async {
-    await _db.collection('jadwal').add(s.toMap());
+    final docRef = _db.collection('jadwal').doc(); // create new doc ref (auto id)
+    // If s.toMap() uses FieldValue.serverTimestamp() for createdAt, Firestore will fill it.
+    await docRef.set(s.toMap());
   }
 
   Future<void> updateJadwal(Schedule s) async {
+    if (s.id.isEmpty) return;
     await _db.collection('jadwal').doc(s.id).update(s.toMap());
   }
 
   Future<void> deleteJadwal(String id) async {
     await _db.collection('jadwal').doc(id).delete();
   }
+
 
   // ============================================================
   // 📝 NILAI SISWA
