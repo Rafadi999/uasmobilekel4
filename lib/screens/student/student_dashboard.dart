@@ -34,6 +34,7 @@ class StudentDashboard extends StatelessWidget {
             style: TextStyle(
               fontWeight: FontWeight.w600,
               letterSpacing: 0.5,
+              color: Colors.white,
               fontSize: 20,
             ),
           ),

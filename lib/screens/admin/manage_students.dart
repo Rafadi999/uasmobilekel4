@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Wajib untuk Auth
+import 'package:firebase_core/firebase_core.dart'; // Wajib untuk Secondary App
 
-// ===== MODEL STUDENT (WAJIB ADA) =====
+// ===== MODEL STUDENT =====
 class Student {
   final String id;
   final String email;
@@ -44,6 +46,7 @@ class ManageStudentsScreen extends StatelessWidget {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController(); // Controller Password
   final TextEditingController _name = TextEditingController();
   final TextEditingController _nis = TextEditingController();
   final TextEditingController _kelas = TextEditingController();
@@ -55,11 +58,12 @@ class ManageStudentsScreen extends StatelessWidget {
   // =========================================================
   // INPUT FIELD
   // =========================================================
-  Widget _buildTextField(TextEditingController controller, String labelText) {
+  Widget _buildTextField(TextEditingController controller, String labelText, {bool isPassword = false}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 15),
       child: TextField(
         controller: controller,
+        obscureText: isPassword, // Sembunyikan teks jika password
         decoration: InputDecoration(
           labelText: labelText,
           border: OutlineInputBorder(
@@ -85,16 +89,19 @@ class ManageStudentsScreen extends StatelessWidget {
       _nis.text = edit.nis;
       _kelas.text = edit.kelas;
       _jurusan.text = edit.jurusan;
+      _password.clear(); // Bersihkan password saat edit (keamanan)
     } else {
       _email.clear();
       _name.clear();
       _nis.clear();
       _kelas.clear();
       _jurusan.clear();
+      _password.clear();
     }
 
     showDialog(
       context: ctx,
+      barrierDismissible: false, // Mencegah tutup tak sengaja saat loading
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
         title: Text(
@@ -103,8 +110,12 @@ class ManageStudentsScreen extends StatelessWidget {
         ),
         content: SingleChildScrollView(
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               _buildTextField(_email, 'Email'),
+              // Field Password hanya muncul saat tambah baru
+              if (edit == null)
+                _buildTextField(_password, 'Password Login', isPassword: true),
               _buildTextField(_name, 'Nama Lengkap'),
               _buildTextField(_nis, 'NIS'),
               _buildTextField(_kelas, 'Kelas'),
@@ -118,64 +129,105 @@ class ManageStudentsScreen extends StatelessWidget {
             child: const Text("Batal"),
           ),
           ElevatedButton(
-            onPressed: () async {
-              if (_name.text.isEmpty || _nis.text.isEmpty) return;
-
-              final data = {
-                'email': _email.text.trim(),
-                'nama': _name.text.trim(),
-                'nis': _nis.text.trim(),
-                'kelas': _kelas.text.trim(),
-                'jurusan': _jurusan.text.trim(),
-                'role': 'siswa',
-                'aktif': true,
-                'lastUpdated': FieldValue.serverTimestamp(),
-                'createdAt': edit == null
-                    ? FieldValue.serverTimestamp()
-                    : edit.createdAt,
-              };
-
-              try {
-                if (edit == null) {
-                  await _db.collection('users').add(data);
-
-                  // ✔ SNACKBAR DATA BARU
-                  ScaffoldMessenger.of(ctx).showSnackBar(
-                    SnackBar(
-                      content:
-                          const Text("Data siswa berhasil ditambahkan!"),
-                      backgroundColor: Colors.green,
-                      behavior: SnackBarBehavior.floating,
-                      margin: const EdgeInsets.all(16),
-                      duration: const Duration(seconds: 2),
-                    ),
-                  );
-                } else {
-                  await _db.collection('users').doc(edit.id).update(data);
-
-                  // ✔ SNACKBAR UPDATE
-                  ScaffoldMessenger.of(ctx).showSnackBar(
-                    SnackBar(
-                      content:
-                          const Text("Perubahan data siswa berhasil disimpan!"),
-                      backgroundColor: Colors.blue,
-                      behavior: SnackBarBehavior.floating,
-                      margin: const EdgeInsets.all(16),
-                      duration: const Duration(seconds: 2),
-                    ),
-                  );
-                }
-
-                Navigator.pop(ctx);
-              } catch (e) {
-                print("Error: $e");
-                Navigator.pop(ctx);
-              }
-            },
             style: ElevatedButton.styleFrom(
               backgroundColor: primaryColor,
               foregroundColor: Colors.white,
             ),
+            onPressed: () async {
+              // --- VALIDASI ---
+              if (_email.text.isEmpty || _name.text.isEmpty || _nis.text.isEmpty) {
+                 ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(content: Text("Email, Nama, dan NIS wajib diisi!")));
+                 return;
+              }
+              if (edit == null && _password.text.length < 6) {
+                 ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(content: Text("Password minimal 6 karakter!")));
+                 return;
+              }
+
+              // Tutup dialog form
+              Navigator.pop(ctx);
+
+              // Tampilkan Loading
+              showDialog(
+                context: ctx,
+                barrierDismissible: false,
+                builder: (c) => const Center(child: CircularProgressIndicator()),
+              );
+
+              try {
+                if (edit == null) {
+                  // =============== TAMBAH DATA BARU (AUTH + FIRESTORE) ===============
+                  
+                  // 1. Buat Instance Firebase App Sekunder
+                  FirebaseApp secondaryApp = await Firebase.initializeApp(
+                    name: 'SecondaryAppStudent', // Nama unik bebas
+                    options: Firebase.app().options,
+                  );
+
+                  try {
+                    // 2. Buat User di Authentication
+                    UserCredential userCredential = await FirebaseAuth.instanceFor(app: secondaryApp)
+                        .createUserWithEmailAndPassword(
+                      email: _email.text.trim(),
+                      password: _password.text.trim(),
+                    );
+
+                    String uid = userCredential.user!.uid;
+
+                    // 3. Simpan data ke Firestore dengan ID = UID
+                    await _db.collection('users').doc(uid).set({
+                      'email': _email.text.trim(),
+                      'nama': _name.text.trim(),
+                      'nis': _nis.text.trim(),
+                      'kelas': _kelas.text.trim(),
+                      'jurusan': _jurusan.text.trim(),
+                      'role': 'siswa', // Role diset otomatis
+                      'aktif': true,
+                      'createdAt': FieldValue.serverTimestamp(),
+                      'lastUpdated': FieldValue.serverTimestamp(),
+                    });
+
+                    // Hapus App Sekunder
+                    await secondaryApp.delete();
+
+                    Navigator.pop(ctx); // Tutup Loading
+                    
+                    ScaffoldMessenger.of(ctx).showSnackBar(
+                      const SnackBar(content: Text("Akun Siswa berhasil dibuat & bisa login!"), backgroundColor: Colors.green),
+                    );
+
+                  } catch (e) {
+                    await secondaryApp.delete();
+                    throw e; 
+                  }
+
+                } else {
+                  // =============== UPDATE DATA SAJA ===============
+                  final data = {
+                    'email': _email.text.trim(),
+                    'nama': _name.text.trim(),
+                    'nis': _nis.text.trim(),
+                    'kelas': _kelas.text.trim(),
+                    'jurusan': _jurusan.text.trim(),
+                    'lastUpdated': FieldValue.serverTimestamp(),
+                  };
+
+                  await _db.collection('users').doc(edit.id).update(data);
+
+                  Navigator.pop(ctx); // Tutup Loading
+                  ScaffoldMessenger.of(ctx).showSnackBar(
+                    const SnackBar(content: Text("Perubahan data siswa berhasil disimpan!"), backgroundColor: Colors.blue),
+                  );
+                }
+
+              } catch (e) {
+                Navigator.pop(ctx); // Tutup Loading
+                print("Error: $e");
+                ScaffoldMessenger.of(ctx).showSnackBar(
+                  SnackBar(content: Text("Gagal menyimpan: $e"), backgroundColor: Colors.red),
+                );
+              }
+            },
             child: Text(edit == null ? "Simpan" : "Update"),
           ),
         ],
@@ -199,11 +251,11 @@ class ManageStudentsScreen extends StatelessWidget {
             child: const Text("Batal"),
           ),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () async {
               await _db.collection('users').doc(s.id).delete();
               Navigator.pop(ctx);
 
-              // ✔ SNACKBAR HAPUS
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text("${s.nama} berhasil dihapus!"),
@@ -214,7 +266,6 @@ class ManageStudentsScreen extends StatelessWidget {
                 ),
               );
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text("Hapus"),
           ),
         ],
@@ -244,15 +295,17 @@ class ManageStudentsScreen extends StatelessWidget {
       body: StreamBuilder<QuerySnapshot>(
         stream: _db.collection('users').where('role', isEqualTo: 'siswa').snapshots(),
         builder: (context, snap) {
-          if (!snap.hasData) return const Center(child: CircularProgressIndicator());
+          if (snap.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-          final docs = snap.data!.docs;
-
-          if (docs.isEmpty) {
+          if (!snap.hasData || snap.data!.docs.isEmpty) {
             return const Center(
               child: Text("Belum ada data siswa.", style: TextStyle(fontSize: 16)),
             );
           }
+
+          final docs = snap.data!.docs;
 
           return ListView.builder(
             padding: const EdgeInsets.all(16),
@@ -261,7 +314,8 @@ class ManageStudentsScreen extends StatelessWidget {
               final s = Student.fromMap(docs[i].id, docs[i].data() as Map<String, dynamic>);
 
               return Card(
-                elevation: 5,
+                elevation: 4,
+                margin: const EdgeInsets.only(bottom: 12),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                 child: ListTile(
                   contentPadding: const EdgeInsets.all(16),
