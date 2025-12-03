@@ -1,7 +1,7 @@
 class Grade {
   final String id;
   final String siswaId;
-  final String subject;
+  final String mapel;
   final double tugas;
   final double uts;
   final double uas;
@@ -9,7 +9,7 @@ class Grade {
   Grade({
     required this.id,
     required this.siswaId,
-    required this.subject,
+    required this.mapel,
     required this.tugas,
     required this.uts,
     required this.uas,
@@ -27,7 +27,7 @@ class Grade {
 
   Map<String, dynamic> toMap() => {
         "siswaId": siswaId,
-        "subject": subject,
+        "mapel": mapel,  // <- FIX
         "tugas": tugas,
         "uts": uts,
         "uas": uas,
@@ -36,7 +36,7 @@ class Grade {
   factory Grade.fromMap(String id, Map<String, dynamic> m) => Grade(
         id: id,
         siswaId: m["siswaId"] ?? "",
-        subject: m["subject"] ?? "",
+        mapel: m["mapel"] ?? "",   // <- FIX
         tugas: (m["tugas"] ?? 0).toDouble(),
         uts: (m["uts"] ?? 0).toDouble(),
         uas: (m["uas"] ?? 0).toDouble(),

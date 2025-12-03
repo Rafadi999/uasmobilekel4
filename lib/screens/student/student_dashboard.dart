@@ -286,13 +286,6 @@ class StudentDashboard extends StatelessWidget {
                           },
                         ),
                         _BigFeatureCard(
-                          label: "Cetak Dokumen",
-                          icon: Icons.print_rounded,
-                          onTap: () {
-                            // Aksi Dokumen
-                          },
-                        ),
-                        _BigFeatureCard(
                           label: "Pengumuman",
                           icon: Icons.campaign_rounded,
                           onTap: () {

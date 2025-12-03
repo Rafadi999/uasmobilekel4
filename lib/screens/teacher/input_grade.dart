@@ -70,7 +70,7 @@ class _InputGradeScreenState extends State<InputGradeScreen> {
     final grade = Grade(
       id: widget.existingGrade?.id ?? "",
       siswaId: widget.siswaId,
-      subject: widget.subject,
+      mapel: widget.subject,
       tugas: double.tryParse(_tugasCtrl.text) ?? 0,
       uts: double.tryParse(_utsCtrl.text) ?? 0,
       uas: double.tryParse(_uasCtrl.text) ?? 0,
